@@ -1,0 +1,633 @@
+Tutorials: Learn SQL in stages
+
+
+World, table
+name	continent	area	population	gdp
+Afghanistan	Asia	652230	25500100	20343000000
+Albania	Europe	28748	2831741	12960000000
+Algeria	Africa	2381741	37100000	188681000000
+Andorra	Europe	468	78115	3712000000
+Angola	Africa	1246700	20609294	100990000000
+
+SELECT basics
+
+1.	
+SELECT population FROM world
+WHERE name = 'Germany'
+
+2.	
+SELECT name, population FROM world
+WHERE name IN ( 'Sweden', 'Norway', 'Denmark');
+
+3.	
+SELECT name, area FROM world
+WHERE area BETWEEN 200000 AND 250000
+
+SELECT from WORLD Tutorial
+
+1.	
+SELECT name, continent, population FROM world
+
+2.	
+SELECT name FROM world
+WHERE population > 200000000
+
+3.	
+select name, gdp/population from world
+where population>200000000
+
+4.	
+select name, population/1000000 from world
+where continent = 'South America'
+
+5.	
+select name, population from world
+where name in ('France', 'Germany', 'Italy')
+
+6.	
+select name from world
+where name like '%United%'
+
+7.	
+select name, population, area from world
+where area>3000000 or population>250000000
+
+8.	
+select name, population, area from world
+where  (area>3000000 or population>250000000) and not (area>3000000 and population>250000000)
+
+9.	 	
+select name, round(population/1000000,2),
+round(gdp/1000000000,2) from world
+ 	where continent='South America'
+
+10.	
+select name, round(gdp/population, -3) from world
+where gdp>1000000000000
+
+11.	
+SELECT name, capital FROM world
+WHERE LENGTH(name)=LENGTH(capital)
+
+12.	
+SELECT name, capital FROM world
+where LEFT(name,1) = LEFT(capital,1) and name<>capital
+
+13.	
+SELECT name FROM world
+WHERE name LIKE '%a%' and name LIKE '%e%' and name LIKE '%i%' and name LIKE '%o%' and name LIKE '%u%' and name not like '% %'
+
+SELECT from Nobel Tutorial
+
+Nobel, table
+yr	subject	winner
+1960	Chemistry	Willard F. Libby
+1960	Literature	Saint-John Perse
+1960	Medicine	Sir Frank Macfarlane Burnet
+1960	Medicine	Peter Madawar
+
+1.	
+SELECT yr, subject, winner FROM nobel
+WHERE yr = 1950
+
+2.	
+SELECT winner FROM nobel
+WHERE yr = 1962 AND subject = 'Literature'
+
+3.	
+select yr, subject from nobel
+where winner = 'Albert Einstein'
+
+4.	
+select winner from nobel
+where yr>=2000 and subject = 'Peace'
+
+5.	
+select yr, subject, winner from nobel
+where yr between 1980 and 1989 and subject='Literature'
+
+6.	
+SELECT * FROM nobel
+WHERE winner in ('Theodore Roosevelt', 'Woodrow Wilson', 'Jimmy Carter', 'Barack Obama')
+
+7.	
+select winner from nobel
+where winner like 'John%'
+
+8.	
+select yr, subject, winner from nobel
+where (subject='Physics' and yr=1980) or (subject='Chemistry' and yr=1984)
+
+9.	         
+select yr, subject, winner from nobel
+where yr=1980 and subject != 'Chemistry' and subject != 'Medicine'
+
+10.	
+select yr, subject, winner from nobel
+where (subject = 'Medicine' and yr<1910) or  (subject = 'Literature' and yr>=2004)
+
+11.	
+select * from nobel
+where winner = 'PETER GRUNBERG'
+
+12.	
+select * from nobel
+where winner like 'EUGENE O%NEILL'
+
+13.	
+select winner, yr, subject from nobel
+where winner like 'SIR%'
+order by  yr desc, winner
+
+14.	
+SELECT winner, subject FROM nobel
+WHERE yr=1984
+ORDER BY  subject IN ('Physics', 'Chemistry'),  subject, winner
+
+SELECT within SELECT Tutorial
+
+1.	
+SELECT name FROM world
+    WHERE population >
+     		(SELECT population FROM world
+     		 WHERE name='Russia')
+
+2.	
+select name from world
+where continent='Europe' and gdp/population>
+(select gdp/population from world
+where name='United Kingdom')
+
+3.	
+select name, continent from world
+where continent =
+(select continent from world
+where name='Argentina')
+ or 
+continent=
+(select continent from world
+where name='Australia')
+order by name
+
+4.	
+select name, population from world
+where population>
+(select population from world
+where name='Canada')
+and 
+population<
+(select population from world
+where name='Poland')
+
+5.	
+select name, concat(round(100*population/
+                     (select population from world
+                      where name='Germany')),'%') from world
+where continent='Europe'
+
+6.	
+select name from world
+where  gdp>ALL
+(select gdp from world
+where gdp>0 and continent='Europe')
+
+7.	
+SELECT continent, name, area FROM world x
+WHERE area >= ALL
+    (SELECT area FROM world y
+     WHERE y.continent=x.continent
+     AND area>0)
+
+
+8.	
+SELECT continent, name FROM world x
+WHERE name <= ALL
+    (SELECT name FROM world y
+     WHERE y.continent=x.continent)
+order by continent, name
+
+or 
+
+select continent, MIN(name) as name from world
+group by continent
+
+9.	
+select name, continent, population from world x
+where 25000000>=all
+(select population from world y
+where y.continent=x.continent
+and population>0)
+
+10.	
+select name, continent from world x
+where population>=all
+(select population*3 from world y
+where x.continent=y.continent
+and x.name!=y.name
+and population>0)
+
+SUM and COUNT
+
+Using SUM, Count, MAX, DISTINCT and ORDER BY.
+
+1.	
+SELECT SUM(population)
+FROM world
+
+2.	
+select distinct continent from world
+
+3.	
+select sum(gdp) from world
+where continent='Africa'
+
+4.	
+select count(name) from world
+where area>=1000000
+
+5.	
+select sum(population) from world
+where name in('Estonia', 'Latvia', 'Lithuania')
+
+6.	
+select continent, count(name) from world
+group by continent
+
+7.	
+select continent, count(name) from world
+where population>=10000000
+group by continent
+
+8.	
+select continent from world
+group by continent
+having sum(population)>=100000000
+
+The JOIN operation
+
+Game, table
+id	mdate	stadium	team1	team2
+1001	8 June 2012	National Stadium, Warsaw	POL	GRE
+1002	8 June 2012	Stadion Miejski (Wroclaw)	RUS	CZE
+1003	12 June 2012	Stadion Miejski (Wroclaw)	GRE	CZE
+1004	12 June 2012	National Stadium, Warsaw	POL	RUS
+
+
+Goal, table
+matchid	teamid	player	gtime
+1001	POL	Robert Lewandowski	17
+1001	GRE	Dimitris Salpingidis	51
+1002	RUS	Alan Dzagoev	15
+1002	RUS	Roman Pavlyuchenko	82
+
+
+Eteam, table
+id	teamname	coach
+POL	Poland	Franciszek Smuda
+RUS	Russia	Dick Advocaat
+CZE	Czech Republic	Michal Bilek
+GRE	Greece	Fernando Santos
+
+1.	
+SELECT matchid, player FROM goal 
+WHERE teamid = 'GER'
+
+2.	
+SELECT id,stadium,team1,team2 FROM game
+where id=1012
+
+3.	
+SELECT player,teamid,stadium, mdate FROM game 
+JOIN goal ON (id=matchid)
+where teamid='GER'
+
+4.	
+select team1, team2, player from game
+join goal on(id=matchid)
+where player like 'Mario%'
+
+5.	
+SELECT player, teamid, coach, gtime FROM goal 
+join eteam on(teamid=id)
+WHERE gtime<=10
+
+6.	
+select mdate, teamname from game
+join eteam on(team1=eteam.id)
+where coach= 'Fernando Santos'
+
+7.	
+select player from goal
+join game on(matchid=id)
+where stadium='National Stadium, Warsaw'
+
+8.	
+SELECT distinct player FROM game 
+JOIN goal ON matchid = id 
+WHERE (teamid!='GER') and (team1='GER' or team2='GER')
+
+9.	
+SELECT teamname, count(*) FROM eteam 
+JOIN goal ON id=teamid
+group by teamname
+
+10.	
+select stadium, count(*) from game
+join goal on (id=matchid)
+group by stadium
+
+11.	
+SELECT matchid, mdate, count(*) FROM game 
+JOIN goal ON matchid = id 
+WHERE (team1 = 'POL' OR team2 = 'POL')
+group by matchid, mdate
+
+12.	
+select matchid, mdate, count(*) from game
+join goal on (id=matchid)
+where teamid='GER'
+group by matchid, mdate
+
+13.	
+SELECT distinct mdate, team1,
+sum(CASE  WHEN teamid=team1 THEN 1 ELSE 0 END) score1,
+team2,
+sum(CASE  WHEN teamid=team2 THEN 1 ELSE 0 END) score2
+FROM game left JOIN goal ON matchid = id
+group by id, mdate, team1, team2
+order by mdate, matchid, team1, team2
+
+More JOIN operations
+
+Movie, table
+id	title	yr	director	budget	gross
+10003	"Crocodile" Dundee II	1988	38	15800000	239606210
+10004	'Til There Was You	1997	49	10000000	
+
+
+Actor, table
+id	name
+20	Paul Hogan
+50	Jeanne Tripplehorn
+
+
+Casting, table
+movieid	actorid	ord
+10003	20	4
+10004	50	1
+
+1.	
+SELECT id, title FROM movie
+WHERE yr=1962
+
+2.	
+select yr from movie
+where title='Citizen Kane'
+
+3.	
+select id, title, yr from movie
+where title like '%Star Trek%'
+order by yr
+
+4.	
+select id from actor
+where name= 'Glenn Close'
+
+5.	
+select id from movie
+where title = 'Casablanca'
+
+6.	
+select name from actor
+join casting on (actor.id=actorid)
+join movie on (movie.id=movieid)
+where title = 'Casablanca'
+
+7.	
+select name from actor
+join casting on (actor.id=actorid)
+join movie on (movie.id=movieid)
+where title = 'Alien'
+
+8.	
+select title from movie
+join casting on (movie.id=movieid)
+join actor on (actorid=actor.id)
+where name='Harrison Ford'
+
+9.	
+select title from movie
+join casting on (movie.id=movieid)
+join actor on (actorid=actor.id)
+where name='Harrison Ford' and ord!=1
+
+10.	
+select title, name from movie
+join casting on (movie.id=movieid)
+join actor on (actorid=actor.id)
+where yr=1962 and ord=1
+
+11.	
+SELECT yr, COUNT(title) FROM
+movie JOIN casting ON movie.id=movieid
+JOIN actor   ON actorid=actor.id
+WHERE name='Rock Hudson'
+GROUP BY yr
+HAVING COUNT(title) > 2
+
+12.	
+SELECT distinct title, name FROM movie
+join casting on (movie.id=movieid)
+join actor on (actorid=actor.id and ord=1)
+where movie.id IN
+   	(select movieid from casting
+    		WHERE actorid IN
+           			(SELECT id FROM actor
+         			WHERE name='Julie Andrews'))
+
+13.	
+select name from actor
+join casting on (actor.id=actorid and ord=1)
+group by name
+having count(name)>=15
+
+14.	
+select title, count(actorid) from casting
+join movie on (movie.id=movieid)
+where yr=1978
+group by movieid, title 
+order by count(actorid) desc, title
+
+15.	
+select name from actor
+join casting on (actorid=actor.id)
+join movie on (movie.id=movieid)
+where name!='Art Garfunkel'
+and movieid in(
+select movieid from actor
+join casting on (actorid=actor.id)
+join movie on (movie.id=movieid)
+where name='Art Garfunkel')
+
+Using Null
+
+NULL, INNER JOIN, LEFT JOIN, RIGHT JOIN
+
+Teacher, table
+id	dept	name	phone	mobile
+101	1	Shrivell	2753	07986 555 1234
+102	1	Throd	2754	07122 555 1920
+103	1	Splint	2293	
+104		Spiregrain	3287	
+105	2	Cutflower	3212	07996 555 6574
+
+Dept, table
+id	name
+1	Computing
+2	Design
+3	Engineering
+
+1.	
+select name from teacher
+where dept is null
+
+2.	
+SELECT teacher.name, dept.name FROM teacher 
+INNER JOIN dept ON (teacher.dept=dept.id)
+
+3.	
+SELECT teacher.name, dept.name FROM teacher 
+left JOIN dept ON (teacher.dept=dept.id)
+
+4.	
+SELECT teacher.name, dept.name FROM teacher 
+right JOIN dept ON (teacher.dept=dept.id)
+
+5.	
+select name, coalesce(mobile, '07986 444 2266') from teacher
+
+6.	
+select teacher.name, coalesce(dept.name, 'None') from teacher
+left join dept on (teacher.dept=dept.id)
+
+7.	
+select count(name), count(mobile) from teacher
+
+8.	
+select dept.name, count(teacher.dept) from teacher
+right join dept on (dept.id=teacher.dept)
+group by dept.name
+
+or 
+
+select dept.name, count(teacher.dept) from dept
+left join teacher on (teacher.dept=dept.id)
+group by dept.name
+
+9.	
+select teacher.name, 
+case when dept=1 or dept=2
+then 'Sci'
+else 'Art'
+end
+from teacher
+
+10.	
+select teacher.name, case when dept=1 or dept=2
+then 'Sci'
+else 'None'
+end
+from teacher
+
+Self join
+
+stops(id, name)
+route(num, company, pos, stop)
+stops
+id
+name
+
+route
+num
+company
+pos
+stop
+
+1.	
+select count(*) from stops
+
+2.	
+select id from stops
+where name='Craiglockhart'
+
+3.	
+select id, name from stops
+join route on (stops.id=route.stop)
+where company='LRT' and num='4'
+
+4.	
+SELECT company, num, COUNT(*)
+FROM route WHERE stop=149 OR stop=53
+GROUP BY company, num
+having COUNT(*)=2
+
+5.	
+SELECT a.company, a.num, a.stop, b.stop
+FROM route a JOIN route b ON
+(a.company=b.company AND a.num=b.num)
+WHERE a.stop=53 and b.stop=149
+
+6.	
+select a.company, a.num, stopa.name, stopb.name from route a
+join route b on (a.company=b.company and a.num=b.num)
+join stops stopa on (a.stop=stopa.id)
+join stops stopb on (b.stop=stopb.id)
+where stopa.name='Craiglockhart' and stopb.name='London Road'
+
+7.	
+select distinct a.company, a.num from route a
+join route b on (a.company=b.company and a.num=b.num)
+join stops stopa on (a.stop=stopa.id)
+join stops stopb on (b.stop=stopb.id)
+where (stopa.name='Haymarket' and stopb.name='Leith') and (a.stop=115 and b.stop=137)
+
+8.	
+select a.company, a.num from route a
+join route b on (a.company=b.company and a.num=b.num)
+join stops stopa on (a.stop=stopa.id)
+join stops stopb on (b.stop=stopb.id)
+where (stopa.name='Craiglockhart' and stopb.name='Tollcross')
+
+9.	
+select distinct stopb.name, a.company, a.num from route a
+join route b on (a.company=b.company and a.num=b.num)
+join stops stopa on (a.stop=stopa.id)
+join stops stopb on (b.stop=stopb.id)
+where stopa.name='Craiglockhart'
+
+or 
+
+SELECT DISTINCT name, a.company, a.num
+FROM route a
+JOIN route b ON (a.company = b.company AND a.num = b.num)
+JOIN stops ON a.stop = stops.id
+WHERE b.stop = 53
+
+10.	
+select distinct a.num, a.company, name, b.num, b.company from stops
+join route as a on (a.stop=stops.id)
+join route as b on (b.stop=stops.id)
+where exists(
+select * from route c
+join stops as k on (c.stop=k.id)
+where k.name='Craiglockhart'
+and c.num=a.num
+and c.company=a.company)
+
+and exists(
+select * from route d
+join stops as l on (d.stop=l.id)
+where l.name='Lochend'
+and d.num=b.num
+and d.company=b.company)
+order by a.num, a.company, name, b.num, b.company
